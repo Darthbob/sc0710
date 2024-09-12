@@ -3,7 +3,7 @@ sc0710-objs := \
 	sc0710-dma-channel.o sc0710-dma-channels.o \
 	sc0710-dma-chains.o sc0710-dma-chain.o \
 	sc0710-things-per-second.o sc0710-video.o \
-	sc0710-audio.o
+	sc0710-audio.o videobuf-core.o videobuf-vmalloc.o
 
 obj-m += sc0710.o
 
@@ -22,7 +22,7 @@ load:	all
 	sudo modprobe videobuf2-common
 	sudo modprobe videodev
 	#sudo modprobe videobuf-dma-sg
-	sudo modprobe videobuf-vmalloc
+	#sudo modprobe videobuf-vmalloc
 	sudo insmod ./sc0710.ko \
 		thread_dma_poll_interval_ms=2 \
 		dma_status=0

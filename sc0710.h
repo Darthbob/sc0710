@@ -51,7 +51,11 @@
 #endif
 #include <media/tuner.h>
 #include <media/tveeprom.h>
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6,5,0)
+#include "videobuf-vmalloc.h"
+#else
 #include <media/videobuf-vmalloc.h>
+#endif
 #include <media/rc-core.h>
 #include <sound/core.h>
 #include <sound/pcm.h>
@@ -268,7 +272,7 @@ enum sc0710_colorimetry_e
 enum sc0710_colorspace_e
 {
 	CS_UNDEFINED = 0,
-	CS_YUV_YCRCB_422_420, 
+	CS_YUV_YCRCB_422_420,
 	CS_YUV_YCRCB_444,
 	CS_RGB_444,
 };
@@ -442,3 +446,10 @@ int  sc0710_audio_register(struct sc0710_dev *dev);
 void sc0710_audio_unregister(struct sc0710_dev *dev);
 int  sc0710_audio_deliver_samples(struct sc0710_dev *dev, struct sc0710_dma_channel *ch,
         const u8 *buf, int bitdepth, int strideBytes, int channels, int samplesPerChannel);
+
+/* -videobuf-vmalloc.c */
+void videobuf_queue_vmalloc_init(struct videobuf_queue *q, const struct videobuf_queue_ops *ops,
+		struct device *dev, spinlock_t *irqlock, enum v4l2_buf_type type, enum v4l2_field field,
+		unsigned int msize, void *priv, struct mutex *ext_lock);
+void *videobuf_to_vmalloc(struct videobuf_buffer *buf);
+void videobuf_vmalloc_free(struct videobuf_buffer *buf);

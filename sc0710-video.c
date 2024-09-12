@@ -349,7 +349,11 @@ static int vidioc_querycap(struct file *file, void *priv, struct v4l2_capability
 	//struct video_device *vdev = video_devdata(file);
 
 	strcpy(cap->driver, "sc0710");
-	strlcpy(cap->card, sc0710_boards[dev->board].name, sizeof(cap->card));
+	#if LINUX_VERSION_CODE >= KERNEL_VERSION(6,5,0)
+    strscpy(cap->card, sc0710_boards[dev->board].name, sizeof(cap->card));
+    #else
+    strlcpy(cap->card, sc0710_boards[dev->board].name, sizeof(cap->card));
+    #endif
 	sprintf(cap->bus_info, "PCIe:%s", pci_name(dev->pci));
 	
 	cap->capabilities  = V4L2_CAP_READWRITE | V4L2_CAP_STREAMING | V4L2_CAP_AUDIO;
@@ -881,7 +885,10 @@ int sc0710_video_register(struct sc0710_dma_channel *ch)
 	//q->ops = &cobalt_qops;
 	//q->mem_ops = &vb2_dma_sg_memops;
 	q->timestamp_flags = V4L2_BUF_FLAG_TIMESTAMP_MONOTONIC;
-	q->min_buffers_needed = 2;
+#if LINUX_VERSION_CODE <= KERNEL_VERSION(6,8,0)
+    q->min_buffers_needed = 2;
+#endif
+	//q->min_buffers_needed = 2;
 	q->lock = &ch->lock;
 	q->dev = &dev->pci->dev;
 
